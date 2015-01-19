@@ -21,7 +21,7 @@ dark_grey = (169, 169, 169)
 dark_green = (0, 255, 0)
 
 rocket_width = 31
-rocket_height = 70
+rocket_height = 75
 
 #Sounds/Music
 crash_sound = pygame.mixer.Sound("explode.wav")
@@ -46,8 +46,6 @@ pygame.display.set_icon(gameIcon)
 
 #Global pause variable
 pause = False
-
-
 
 def quitgame():
     pygame.quit()
@@ -214,8 +212,8 @@ def game_loop():
     pygame.mixer.music.play(-1)
 
     #relative rocket position vs screen (initial rocket position)
-    x = (display_width * 0.45)
-    y = display_height * 0.8
+    x = display_width * 0.45
+    y = display_height  - rocket_height
     #Moving the rocket
     x_change = 0
 
@@ -286,9 +284,9 @@ def game_loop():
             #changes width and height of object
             object_width = random.randint(30, 100)
             object_height = random.randint(90, 150)
+
         #This happens when the rocket crashes the object
         if y < object_starty + object_height:
-            #print (x, y)
             if x > object_startx and x < object_startx + object_width or x + rocket_width >object_startx and x + rocket_width < object_startx + object_width:
                 #print ("x crossover")
                 crash()
