@@ -20,7 +20,11 @@ green = (0, 200, 0)
 dark_grey = (169, 169, 169)
 dark_green = (0, 255, 0)
 
-car_width = 31
+car_width = 29
+
+#Sounds/Music
+crash_sound = pygame.mixer.Sound("explode.wav")
+pygame.mixer.music.load("bg.wav")
 
 #Game width x height (resolution (tuple))
 gameDisplay = pygame.display.set_mode((display_width, display_height))
@@ -32,9 +36,17 @@ pygame.display.set_caption("Space Explorer")
 clock = pygame.time.Clock()
 
 #importing image of spaceship
-carImg = pygame.image.load("rocket.png")
+rocketImg = pygame.image.load("rocket.png")
+#import icon image
+gameIcon = pygame.image.load("icon.png")
 
+#Game window icon
+pygame.display.set_icon(gameIcon)
+
+#Global pause variable
 pause = False
+
+
 
 def quitgame():
     pygame.quit()
@@ -42,9 +54,13 @@ def quitgame():
 
 def unpause():
     global pause
+    #Unpauses music
+    pygame.mixer.music.unpause()
     pause = False
 
 def paused():
+    #Stops the music when paused
+    pygame.mixed.music.pause()
 
     while pause:
         for event in pygame.event.get():
@@ -53,7 +69,7 @@ def paused():
                 quit()
 
         gameDisplay.fill(black)
-        largeText = pygame.font.Font("freesansbold.ttf", 40)
+        largeText = pygame.font.SysFont("comicsansms", 40)
         TextSurf, TextRect = text_objects("Paused", largeText)
         TextRect.center = ((display_width/2), (display_height/2))
         gameDisplay.blit(TextSurf, TextRect)
@@ -69,26 +85,6 @@ def text_objects(text, font):
     textSurface = font.render(text, True, red)
     return textSurface, textSurface.get_rect()
 
-def message_display(text):
-    #(font, fontsize)
-    largeText = pygame.font.Font("freesansbold.ttf", 40)
-
-    #text surface and text rectangle - returns to use text surface and text rectangle
-    TextSurf, TextRect = text_objects(text, largeText)
-
-    #Centers text
-    TextRect.center = ((display_width/2), (display_height/2))
-    gameDisplay.blit(TextSurf, TextRect)
-
-    pygame.display.update()
-
-    #How long text displayed on screen
-    time.sleep(2)
-
-    #Restarts game after you crashed
-    game_loop()
-
-
 def things_dodged(count):
     font = pygame.font.SysFont(None, 25)
     text = font.render("Objects avoided: " + str(count), True, white)
@@ -99,14 +95,18 @@ def things_dodged(count):
 def things(thingx, thingy, thingw, thingh, color):
     pygame.draw.rect(gameDisplay, color, [thingx, thingy, thingw, thingh])
 
-def car(x, y):
-    #Places car image on screen
-    gameDisplay.blit(carImg, (x, y))
+def rocket(x, y):
+    #Places rocket image on screen
+    gameDisplay.blit(rocketImg, (x, y))
 
 def crash():
+        #Stops music
+        pygame.mixer.music.stop()
+        #And plays crash sound
+        pygame.mixer.Sound.play(crash_sound)
 
         #gameDisplay.fill(black) - Don't fill so you see you where you got hit
-        largeText = pygame.font.Font("freesansbold.ttf", 40)
+        largeText = pygame.font.SysFont("comicsansms", 40)
         TextSurf, TextRect = text_objects("You Died!", largeText)
         TextRect.center = ((display_width/2), (display_height/2))
         gameDisplay.blit(TextSurf, TextRect)
@@ -158,7 +158,7 @@ def button(msg, x, y, w, h, inactive_color, active_color, action = None):
             pygame.draw.rect(gameDisplay, grey, (220, y, w, h))
 
         #Button text
-        smallText = pygame.font.Font("freesansbold.ttf", 19)
+        smallText = pygame.font.SysFont("comicsansms",19)
         textSurf, textRect = text_objects(msg, smallText)
         textRect.center = ((x+ (w/2)), (y + (h/2)) )
         gameDisplay.blit(textSurf, textRect)
@@ -175,7 +175,7 @@ def game_intro():
                 quit()
 
         gameDisplay.fill(black)
-        largeText = pygame.font.Font("freesansbold.ttf", 40)
+        largeText = pygame.font.SysFont("comicsansms", 40)
         TextSurf, TextRect = text_objects("Space Explorer", largeText)
         TextRect.center = ((display_width/2), (display_height/2))
         gameDisplay.blit(TextSurf, TextRect)
@@ -193,7 +193,7 @@ def text_objects(text, font):
 
 def message_display(text):
     #(font, fontsize)
-    largeText = pygame.font.Font("freesansbold.ttf", 40)
+    largeText = pygame.font.SysFont("comicsansms", 40)
 
     #text surface and text rectangle - returns to use text surface and text rectangle
     TextSurf, TextRect = text_objects(text, largeText)
@@ -213,7 +213,10 @@ def message_display(text):
 def game_loop():
     global pause
 
-    #relative car position vs screen (initial rocket position)
+    #Plays Music in game loop - the -1 means it will loop infinite times
+    pygame.mixer.music.play(-1)
+
+    #relative rocket position vs screen (initial rocket position)
     x = (display_width * 0.45)
     y = display_height * 0.8
     #Moving the rocket
@@ -222,7 +225,7 @@ def game_loop():
     #Initial starting "thing"/object positions
     thing_startx = random.randrange(0 , display_width)
     thing_starty = -600
-    thing_speed = level
+    thing_speed = 2.2
     thing_width = 50
     thing_height = 50
 
@@ -244,9 +247,9 @@ def game_loop():
             #Checks for a key press (event handling)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    x_change = -(sensitivity)
+                    x_change = -6
                 elif event.key == pygame.K_RIGHT:
-                    x_change = sensitivity
+                    x_change = 6
                 #Pause function press
                 elif event.key ==pygame.K_p:
                     pause = True
@@ -257,7 +260,7 @@ def game_loop():
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                     x_change = 0
 
-        #Changes car position on screen
+        #Changes rocket position on screen
         x += x_change
 
         #Game bg colour
@@ -267,8 +270,8 @@ def game_loop():
         things(thing_startx, thing_starty, thing_width, thing_height, white)
         thing_starty += thing_speed
 
-        #display car in loop
-        car(x, y)
+        #display rocket in loop
+        rocket(x, y)
 
         #display objects dodged count
         things_dodged(dodged)
@@ -287,7 +290,7 @@ def game_loop():
             #changes width and height of thing
             thing_width = random.randint(0, 100)
             thing_height = random.randint(90, 200)
-        #This happens when the car crashes the object
+        #This happens when the rocket crashes the object
         if y < thing_starty + thing_height:
             if x > thing_startx and x < thing_startx + thing_width or x + car_width >thing_startx and x + car_width < thing_startx + thing_width:
                 #print ("x crossover")
@@ -298,13 +301,13 @@ def game_loop():
 
         #fps
         clock.tick(60)
-level = 2.5 #int(input("Please enter level you wish to start on: "))
-sensitivity = 7 #int(input("Please enter sensitivity of movement (default 7): "))
+def main():
+    #Dispalys intro before game starts
+    game_intro()
 
-#Dispalys intro before game starts
-game_intro()
+    game_loop()
+    #quits pygame (opposite of init)
+    pygame.quit()
+    quit()
 
-game_loop()
-#quits pygame (opposite of init)
-pygame.quit()
-quit()
+main()

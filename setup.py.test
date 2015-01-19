@@ -1,0 +1,14 @@
+import cx_Freeze
+
+includefiles = ["rocket.png", "icon.png", "explode.wav", "bg.wav"]
+packages = ["pygame"]
+executables = [cx_Freeze.Executable("SpaceExplorer.py")]
+
+cx_Freeze.setup(
+    name = "Space Explorer",
+    version = "0.1",
+    author = "E.Cheyne",
+    options = {"build_exe": {"packages": packages, "include_files": includefiles}},
+    description = "Dodging objects game",
+    executables = executables
+    )
