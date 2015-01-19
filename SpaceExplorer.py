@@ -20,7 +20,8 @@ green = (0, 200, 0)
 dark_grey = (169, 169, 169)
 dark_green = (0, 255, 0)
 
-car_width = 29
+rocket_width = 31
+rocket_height = 70
 
 #Sounds/Music
 crash_sound = pygame.mixer.Sound("explode.wav")
@@ -60,7 +61,7 @@ def unpause():
 
 def paused():
     #Stops the music when paused
-    pygame.mixed.music.pause()
+    pygame.mixer.music.pause()
 
     while pause:
         for event in pygame.event.get():
@@ -85,15 +86,13 @@ def text_objects(text, font):
     textSurface = font.render(text, True, red)
     return textSurface, textSurface.get_rect()
 
-def things_dodged(count):
+def objects_dodged(count):
     font = pygame.font.SysFont(None, 25)
     text = font.render("Objects avoided: " + str(count), True, white)
     gameDisplay.blit(text, (0, 0))
 
-
-
-def things(thingx, thingy, thingw, thingh, color):
-    pygame.draw.rect(gameDisplay, color, [thingx, thingy, thingw, thingh])
+def objects(objectx, objecty, objectw, objecth, color):
+    pygame.draw.rect(gameDisplay, color, [objectx, objecty, objectw, objecth])
 
 def rocket(x, y):
     #Places rocket image on screen
@@ -117,13 +116,11 @@ def crash():
                     pygame.quit()
                     quit()
 
-
             button("Play again",70, 350, 100, 50, green, dark_green, game_loop)
             button("QUIT",220, 350, 100, 50, grey, dark_grey, quitgame)
 
             pygame.display.update()
             clock.tick(15)
-
 
 def button(msg, x, y, w, h, inactive_color, active_color, action = None):
         mouse = pygame.mouse.get_pos()
@@ -222,12 +219,12 @@ def game_loop():
     #Moving the rocket
     x_change = 0
 
-    #Initial starting "thing"/object positions
-    thing_startx = random.randrange(0 , display_width)
-    thing_starty = -600
-    thing_speed = 2.2
-    thing_width = 50
-    thing_height = 50
+    #Initial starting "object"/object positions
+    object_startx = random.randrange(0 , display_width)
+    object_starty = -600
+    object_speed = 2.2
+    object_width = 50
+    object_height = 50
 
     #initialise objects dodged
     dodged = 0
@@ -255,7 +252,6 @@ def game_loop():
                     pause = True
                     paused()
 
-
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                     x_change = 0
@@ -266,35 +262,37 @@ def game_loop():
         #Game bg colour
         gameDisplay.fill(black)
 
-        #Drawing things
-        things(thing_startx, thing_starty, thing_width, thing_height, white)
-        thing_starty += thing_speed
+        #Drawing objects
+        objects(object_startx, object_starty, object_width, object_height, white)
+        object_starty += object_speed
 
         #display rocket in loop
         rocket(x, y)
 
         #display objects dodged count
-        things_dodged(dodged)
+        objects_dodged(dodged)
 
         #Setting boundaries
-        if x  > display_width - car_width or x < 0:
+        if x  > display_width - rocket_width or x < 0:
             crash()
-        #Setting thing/object boundaries and generates random starting position
-        if thing_starty > display_height:
-            thing_starty = 0 - thing_height
-            thing_startx = random.randrange(0, display_width)
+        #Setting object/object boundaries and generates random starting position
+        if object_starty > display_height:
+            object_starty = 0 - object_height
+            object_startx = random.randrange(0, display_width)
             #increases dodged object
             dodged += 1
             #increases dificulty after every object avoided
-            thing_speed += ((dodged*0.05) + 1)
-            #changes width and height of thing
-            thing_width = random.randint(0, 100)
-            thing_height = random.randint(90, 200)
+            object_speed += ((dodged*0.05) + 0.75)
+            #changes width and height of object
+            object_width = random.randint(30, 100)
+            object_height = random.randint(90, 150)
         #This happens when the rocket crashes the object
-        if y < thing_starty + thing_height:
-            if x > thing_startx and x < thing_startx + thing_width or x + car_width >thing_startx and x + car_width < thing_startx + thing_width:
+        if y < object_starty + object_height:
+            #print (x, y)
+            if x > object_startx and x < object_startx + object_width or x + rocket_width >object_startx and x + rocket_width < object_startx + object_width:
                 #print ("x crossover")
                 crash()
+
 
         #updates whole window/redrawing a frame
         pygame.display.update()
