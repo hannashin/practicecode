@@ -6,8 +6,8 @@ import random
 pygame.init()
 
 #display size
-display_width = 380
-display_height = 600
+display_width = 350
+display_height = 450
 
 #Define colours in RGB
 black = (0, 0, 0)
@@ -20,8 +20,8 @@ green = (0, 200, 0)
 dark_grey = (169, 169, 169)
 dark_green = (0, 255, 0)
 
-rocket_width = 31
-rocket_height = 75
+rocket_width = 25
+rocket_height = 82
 
 #Sounds/Music
 crash_sound = pygame.mixer.Sound("explode.wav")
@@ -104,7 +104,7 @@ def crash():
 
         #gameDisplay.fill(black) - Don't fill so you see you where you got hit
         largeText = pygame.font.SysFont("comicsansms", 40)
-        TextSurf, TextRect = text_objects("You Died!", largeText)
+        TextSurf, TextRect = text_objects("You got hit! Becareful!", largeText)
         TextRect.center = ((display_width/2), (display_height/2))
         gameDisplay.blit(TextSurf, TextRect)
 
@@ -114,8 +114,8 @@ def crash():
                     pygame.quit()
                     quit()
 
-            button("Play again",70, 350, 100, 50, green, dark_green, game_loop)
-            button("QUIT",220, 350, 100, 50, grey, dark_grey, quitgame)
+            button("Wanna play again?",70, 350, 100, 50, green, dark_green, game_loop)
+            button("The Quit Button",220, 350, 100, 50, grey, dark_grey, quitgame)
 
             pygame.display.update()
             clock.tick(15)
